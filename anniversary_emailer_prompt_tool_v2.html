@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Anniversary Emailer</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --blue:#2563eb;--blue-light:#dbeafe;--blue-mid:#93c5fd;--blue-dark:#1e3a5f;
+  --surface:#f0f7ff;--white:#fff;--radius:14px;--shadow:0 2px 16px rgba(37,99,235,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:linear-gradient(135deg,#e0eeff 0%,#f0f7ff 60%,#dbeafe 100%);min-height:100vh;padding:24px 12px 40px}
+.wrap{max-width:640px;margin:0 auto}
+header{text-align:center;margin-bottom:28px}
+header h1{font-size:clamp(1.25rem,4vw,1.75rem);font-weight:700;color:var(--blue-dark);letter-spacing:-.5px}
+header p{font-size:13px;color:#4b7ab5;margin-top:4px}
+.chatgpt-tip{display:flex;align-items:center;gap:12px;background:var(--white);border:1.5px solid var(--blue-mid);border-radius:12px;padding:12px 16px;margin-bottom:20px}
+.tip-icon{font-size:20px;flex-shrink:0}
+.tip-label{font-size:13px;font-weight:700;color:var(--blue-dark);margin-right:6px}
+.tip-text{font-size:13px;color:#4b7ab5}
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--blue-mid);padding:clamp(16px,4vw,28px);margin-bottom:20px}
+.card h2{font-size:13px;font-weight:700;color:var(--blue-dark);text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--blue-light)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:#4b7ab5;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.field input,.field textarea{width:100%;padding:10px 13px;border:1.5px solid var(--blue-mid);border-radius:9px;font-family:inherit;font-size:14px;color:var(--blue-dark);background:#f8fbff;outline:none;transition:border .15s,box-shadow .15s}
+.field input:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.field textarea{resize:vertical;min-height:72px}
+.ref-section{background:linear-gradient(135deg,#e8f2ff,#dbeafe);border:2px dashed #60a5fa;border-radius:12px;padding:16px;text-align:center}
+.ref-label{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ref-label span{font-size:13px;font-weight:700;color:var(--blue-dark)}
+.badge{background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.4px}
+.img-btn{position:relative;display:inline-block;cursor:pointer;border-radius:10px;overflow:hidden;max-width:260px;margin:0 auto}
+.img-btn img{width:100%;display:block;border-radius:10px;border:2px solid #3b82f6;transition:transform .2s}
+.img-btn:hover img{transform:scale(1.02)}
+.img-overlay{position:absolute;inset:0;background:rgba(37,99,235,.55);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;border-radius:10px}
+.img-btn:hover .img-overlay{opacity:1}
+.img-overlay span{background:#fff;color:var(--blue);font-size:12px;font-weight:700;padding:6px 14px;border-radius:20px}
+.ref-hint{font-size:11px;color:#4b7ab5;margin:8px 0 10px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.btn{padding:10px 20px;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:#1d4ed8}
+.btn-outline{background:var(--white);color:var(--blue-dark);border:1.5px solid var(--blue-mid)}
+.btn-outline:hover{background:var(--blue-light)}
+.btn-teal{background:#0891b2;color:#fff}
+.btn-teal:hover{background:#0e7490}
+.output-area{width:100%;padding:11px 13px;border:1.5px solid var(--blue-mid);border-radius:9px;font-family:inherit;font-size:13px;color:var(--blue-dark);background:#f8fbff;resize:vertical;min-height:120px;outline:none;line-height:1.6}
+.toast{margin-top:10px;font-size:13px;font-weight:500;min-height:20px;transition:color .2s}
+.toast.ok{color:#15803d}
+.toast.err{color:#dc2626}
+a.open-link{text-decoration:none}
+@media(max-width:480px){
+  .btns{flex-direction:column}
+  .btn{width:100%;text-align:center}
+}
+@media(min-width:481px) and (max-width:768px){}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🎉 Anniversary Emailer</h1>
+    <p>Generate personalised Kesari anniversary card prompts</p>
+  </header>
+
+  <div class="chatgpt-tip">
+    <span class="tip-icon">💬</span>
+    <div>
+      <span class="tip-label">ChatGPT</span>
+      <span class="tip-text">Paste prompt &nbsp;+&nbsp; paste reference image &nbsp;+&nbsp; paste photo image</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Employee Details</h2>
+    <div class="field">
+      <label>Employee Name</label>
+      <input id="EMP_NAME" placeholder="e.g. Santosh" autocomplete="off"/>
+    </div>
+    <div class="field">
+      <label>Years of Service</label>
+      <input id="YEARS" placeholder="e.g. 25" type="number" min="1"/>
+    </div>
+    <div class="field">
+      <label>Paragraph Lines</label>
+      <input id="LINE_COUNT" placeholder="e.g. 4" type="number" min="1"/>
+    </div>
+    <div class="field">
+      <label>Custom Paragraph (optional)</label>
+      <textarea id="CUSTOM_PARAGRAPH" placeholder="Add any custom message here..."></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Generate &amp; Copy Prompt</h2>
+    <div class="btns" style="margin-bottom:14px">
+      <button class="btn btn-primary" onclick="generatePrompt()">✨ Generate Prompt</button>
+    </div>
+    <div class="field">
+      <label>Generated Prompt</label>
+      <textarea class="output-area" id="output" readonly placeholder="Your prompt will appear here after clicking Generate..."></textarea>
+    </div>
+    <div class="btns">
+      <button class="btn btn-outline" onclick="copyPrompt()">📋 Copy Prompt</button>
+      <a class="open-link" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">
+        <button class="btn btn-primary" type="button">🚀 Open ChatGPT ↗</button>
+      </a>
+    </div>
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <div class="card">
+    <div class="ref-label">
+      <span>📌 Reference Image</span>
+      <span class="badge">PERMANENT</span>
+    </div>
+    <div class="ref-section">
+      <div class="img-btn" onclick="copyImage()" title="Click to copy">
+        <img id="refImg" src="reference_image.png" alt="Kesari Anniversary Card Reference"/>
+        <div class="img-overlay"><span>📋 Click to Copy</span></div>
+      </div>
+      <p class="ref-hint">Click image or button to copy to clipboard</p>
+      <button class="btn btn-teal" onclick="copyImage()">📋 Copy Image</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TPL=`Recreate the provided greeting card image with exact visual replication, preserving 100% of the original layout, typography, spacing, colors, and overall design while applying only the following changes: replace the existing circular male profile image with the new image provided, ensuring it fits perfectly within the same circle without distortion, maintains realistic quality, and matches the exact size and alignment; the background inside the circle must seamlessly match the outer page background color with no visible edges. Replace the name "Raju" with "{EMP_NAME}" while keeping the exact same font style, size, color, spacing, and position. Rewrite the greeting paragraph into a new version with the same warm, emotional, and positive tone, keeping it very strictly in a {LINE_COUNT}-line format with identical font size, spacing, alignment, and placement, and aligning the theme around travel, journeys, and destinations. Change the large number "25" to "{YEARS}" while maintaining the same size, position, and layout balance, but redesign the number in a classic, elegant, and slightly creative style that subtly reflects a travel or destination theme and blends naturally with the original color palette. Do not alter any layout structure, background design, typography system, spacing, alignment, or proportions in any way—the final result must look like the exact same template with only the specified content updated. Ensure the output is high-resolution, with sharp text, clean edges, perfect alignment, and a professional greeting card finish, without adding any new elements or introducing any design changes beyond what is specified. {CUSTOM_PARAGRAPH}`;
+
+function msg(t,type){const e=document.getElementById('toast');e.textContent=t;e.className='toast '+(type||'');}
+
+function generatePrompt(){
+  const v={EMP_NAME:document.getElementById('EMP_NAME').value,YEARS:document.getElementById('YEARS').value,LINE_COUNT:document.getElementById('LINE_COUNT').value,CUSTOM_PARAGRAPH:document.getElementById('CUSTOM_PARAGRAPH').value};
+  let r=TPL;
+  Object.keys(v).forEach(k=>{let val=v[k]||'';if(k==='CUSTOM_PARAGRAPH'&&val)val='Add this as a '+v.LINE_COUNT+'-line paragraph: '+val;r=r.replaceAll('{'+k+'}',val);});
+  document.getElementById('output').value=r;
+  msg('✅ Prompt generated! Now copy it below.','ok');
+}
+
+function copyPrompt(){
+  const t=document.getElementById('output').value;
+  if(!t.trim()){msg('⚠️ Generate a prompt first.','err');return;}
+  navigator.clipboard?.writeText(t).then(()=>msg('✅ Prompt copied!','ok')).catch(()=>fallbackText(t));
+}
+
+function fallbackText(t){
+  const ta=document.createElement('textarea');
+  ta.value=t;Object.assign(ta.style,{position:'fixed',opacity:'0'});
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');msg('✅ Prompt copied!','ok');}
+  catch{msg('❌ Could not copy. Select & copy manually.','err');}
+  document.body.removeChild(ta);
+}
+
+async function copyImage(){
+  msg('Copying image...','');
+  const img=document.getElementById('refImg');
+  const draw=src=>new Promise((res,rej)=>{
+    const c=document.createElement('canvas'),i=new Image();
+    i.crossOrigin='anonymous';
+    i.onload=()=>{c.width=i.naturalWidth||800;c.height=i.naturalHeight||800;c.getContext('2d').drawImage(i,0,0);c.toBlob(b=>b?res(b):rej(),'image/png');};
+    i.onerror=rej;i.src=src+'?t='+Date.now();
+  });
+  try{
+    const blob=await draw(img.src);
+    await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+    msg('✅ Image copied! Paste into ChatGPT.','ok');
+  }catch{
+    msg('⚠️ Right-click the image → "Copy image", then paste into ChatGPT.','err');
+  }
+}
+</script>
+</body>
+</html>
